@@ -8,6 +8,59 @@ import React from 'react'
 
 // 🦉 You've learned all the hooks you need to know to refactor this Board
 // component to hooks. So, let's make it happen!
+import {useLocalStorageState} from "../utils"
+
+const BoardHooked = ({}) => {
+  const [squares, setSquares] = useLocalStorageState('squares', Array(9).fill(null));
+  
+  const restart = () => {
+    setSquares({squares: Array(9).fill(null)})
+  }
+
+  const selectSquare = square => {
+    const nextValue = calculateNextValue(squares)
+    if (calculateWinner(squares) || squares[square]) {
+      return
+    }
+    const squaresCopy = [...squares]
+    squaresCopy[square] = nextValue
+    setSquares({squares: squaresCopy})
+  }
+
+  const renderSquare = i => (
+    <button className="square" onClick={() => selectSquare(i)}>
+      {this.state.squares[i]}
+    </button>
+  )
+
+  const nextValue = calculateNextValue(squares)
+  const winner = calculateWinner(squares)
+  let status = calculateStatus(winner, squares, nextValue)
+
+  return (
+    <div>
+      <div className="status">{status}</div>
+      <div className="board-row">
+        {renderSquare(0)}
+        {renderSquare(1)}
+        {renderSquare(2)}
+      </div>
+      <div className="board-row">
+        {renderSquare(3)}
+        {renderSquare(4)}
+        {renderSquare(5)}
+      </div>
+      <div className="board-row">
+        {renderSquare(6)}
+        {renderSquare(7)}
+        {renderSquare(8)}
+      </div>
+      <button className="restart" onClick={restart}>
+        restart
+      </button>
+    </div>
+  )
+}
 
 class Board extends React.Component {
   state = {
@@ -86,7 +139,7 @@ function Game() {
   return (
     <div className="game">
       <div className="game-board">
-        <Board />
+        <BoardHooked />
       </div>
     </div>
   )

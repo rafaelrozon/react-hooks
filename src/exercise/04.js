@@ -2,17 +2,25 @@
 // http://localhost:3000/isolated/exercise/04.js
 
 import React from 'react'
+import {useLocalStorageState} from '../utils';
 
 function Board() {
   // 🐨 squares is the state for this component. Add useState for squares
-  const squares = Array(9).fill(null)
-
+  // const squares = Array(9).fill(null)
+  
+  const [squares, setSquares] = useLocalStorageState(
+    'squares',
+    Array(9).fill(null),
+  )
   // 🐨 We'll need the following bits of derived state:
   // - nextValue ('X' or 'O')
   // - winner ('X', 'O', or null)
   // - status (`Winner: ${winner}`, `Scratch: Cat's game`, or `Next player: ${nextValue}`)
   // 💰 I've written the calculations for you! So you can use my utilities
   // below to create these variables
+  const nextValue = calculateNextValue(squares);
+  const winner = calculateWinner(squares);
+  const status = calculateStatus(winner, squares, nextValue);
 
   // This is the function your square click handler will call. `square` should
   // be an index. So if they click the center square, this will be `4`.
@@ -20,6 +28,10 @@ function Board() {
     // 🐨 first, if there's already winner or there's already a value at the
     // given square index (like someone clicked a square that's already been
     // clicked), then return early so we don't make any state changes
+    if (winner || squares[square]) {
+      return
+    }
+    
     //
     // 🦉 It's typically a bad idea to manipulate state in React because that
     // can lead to subtle bugs that can easily slip into productions.
@@ -28,10 +40,14 @@ function Board() {
     // 💰 `squaresCopy[square] = nextValue`
     //
     // 🐨 set the squares to your copy
+    const squaresCopy = [...squares];
+    squaresCopy[square] = nextValue;
+    setSquares(squaresCopy);
   }
 
   function restart() {
     // 🐨 set the squares to `Array(9).fill(null)`
+    setSquares(Array(9).fill(null));
   }
 
   function renderSquare(i) {
@@ -45,7 +61,9 @@ function Board() {
   return (
     <div>
       {/* 🐨 put the status here */}
-      <div className="status">STATUS</div>
+      <div className="status">status: {status}</div>
+      <div className="status">nextValue: {nextValue}</div>
+      <div className="status">winner: {winner}</div>
       <div className="board-row">
         {renderSquare(0)}
         {renderSquare(1)}
